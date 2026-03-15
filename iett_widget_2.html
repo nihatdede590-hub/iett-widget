@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:#0d0d14;color:#e8e8f0;font-family:monospace;width:100%;height:100%;overflow:hidden;}
+.w{width:100vw;height:100vh;padding:8px;display:flex;flex-direction:column;gap:6px;}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 2px;}
+.dot{width:6px;height:6px;border-radius:50%;background:#34d399;animation:p 2s ease-in-out infinite;margin-right:6px;}
+@keyframes p{0%,100%{opacity:1}50%{opacity:0.3}}
+.ttl{font-size:10px;color:#8888a0;letter-spacing:.1em;}
+.clk{font-size:13px;font-weight:bold;color:#8888a0;}
+.card{background:#13131e;border-radius:12px;overflow:hidden;flex:1;display:flex;flex-direction:column;border:0.5px solid rgba(255,255,255,0.07);}
+.ckm{border-top:2px solid #4f9cf9;}
+.cf19{border-top:2px solid #34d399;}
+.ch{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.bkm{font-size:11px;font-weight:bold;padding:2px 7px;border-radius:5px;background:rgba(79,156,249,0.15);color:#4f9cf9;}
+.bf19{font-size:11px;font-weight:bold;padding:2px 7px;border-radius:5px;background:rgba(52,211,153,0.15);color:#34d399;}
+.rn{font-size:10px;color:#7777a0;flex:1;}
+.gn{font-size:9px;color:#444455;}
+.tabs{display:flex;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.tab{flex:1;padding:5px;font-size:9px;font-weight:bold;color:#555566;background:transparent;border:none;cursor:pointer;font-family:monospace;position:relative;}
+.tab::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;border-radius:2px;background:#34d399;transform:scaleX(0);transition:transform .2s;}
+.tab.on{color:#34d399;}
+.tab.on::after{transform:scaleX(1);}
+.slots{display:grid;grid-template-columns:1fr 1fr 1fr;flex:1;}
+.slot{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 3px;position:relative;}
+.slot:not(:last-child)::after{content:'';position:absolute;right:0;top:15%;height:70%;width:.5px;background:rgba(255,255,255,0.07);}
+.sl{font-size:8px;font-weight:bold;color:#444455;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+.st{font-size:20px;font-weight:bold;letter-spacing:-.02em;line-height:1;margin-bottom:3px;}
+.past{color:#333344;}
+.nkm{color:#4f9cf9;}
+.nf{color:#34d399;}
+.soon{color:#e8e8f0;}
+.none{color:#222233;}
+.ss{font-size:8px;color:#444455;min-height:10px;text-align:center;}
+.hot{color:#fb923c;}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="hdr">
+    <div style="display:flex;align-items:center"><div class="dot"></div><span class="ttl">İETT SEFER</span></div>
+    <div class="clk" id="clk">--:--</div>
+  </div>
+  <div class="card ckm">
+    <div class="ch">
+      <span class="bkm">KM41-1</span>
+      <span class="rn">Başıbüyük → Küçükyalı</span>
+      <span class="gn" id="gkm"></span>
+    </div>
+    <div class="slots" id="skm"></div>
+  </div>
+  <div class="card cf19">
+    <div class="ch">
+      <span class="bf19">19F-1</span>
+      <span class="rn" id="rn19">Yurt → Kadıköy</span>
+      <span class="gn" id="gf19"></span>
+    </div>
+    <div class="tabs">
+      <button class="tab on" id="ty" onclick="sd('y')">Yurt→Kadıköy</button>
+      <button class="tab" id="tk" onclick="sd('k')">Kadıköy→Yurt</button>
+    </div>
+    <div class="slots" id="sf19"></div>
+  </div>
+</div>
+<script>
+var D={
+KM:{I:["06:44","07:09","07:34","07:58","08:25","08:52","09:15","09:41","10:04","10:31","10:55","11:21","11:46","12:10","12:35","13:01","13:24","13:52","14:14","14:41","15:05","15:32","15:55","16:23","16:46","17:11","17:34","17:59","18:24","18:49","19:14","19:40"],C:["06:44","07:09","07:34","07:58","08:25","08:52","09:15","09:41","10:04","10:31","10:55","11:21","11:46","12:10","12:35","13:01","13:24","13:52","14:14","14:41","15:05","15:32","15:55","16:23","16:46","17:11","17:34","17:59","18:24","18:49","19:14","19:40"],P:["06:44","07:09","07:34","07:58","08:25","08:52","09:15","09:41","10:04","10:31","10:55","11:21","11:46","12:10","12:35","13:01","13:24","13:52","14:14","14:41","15:05","15:32","15:55","16:23","16:46","17:11","17:34","17:59","18:24","18:49","19:14","19:40"]},
+FY:{I:["06:30","06:40","06:48","06:55","07:00","07:05","07:10","07:15","07:20","07:25","07:30","07:35","07:40","07:45","07:50","07:55","08:00","08:05","08:10","08:15","08:20","08:26","08:32","08:40","08:48","08:57","09:06","09:15","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30"],C:["07:00","07:30","07:50","08:10","08:30","08:50","09:10","09:30","09:50","10:10","10:30","10:50","11:10","11:30","11:49","12:07","12:24","12:41","13:00","13:20","13:40","14:00","14:20","14:40","15:00","15:20","15:40","16:00","16:20","16:40","17:00","17:20","17:40","18:00","18:20","18:41","19:02","19:23","19:45","20:10","20:30","20:50","21:10","21:30","21:50","22:10","22:30"],P:["07:00","08:00","09:00","10:00","11:00","11:30","12:00","12:35","13:21","13:48","14:15","14:42","15:09","15:36","16:03","16:30","16:57","17:24","17:51","18:20","18:45","19:05","19:30","20:00","20:30","21:00","21:30","22:00"]},
+FK:{I:["14:30","14:45","15:00","15:15","15:30","15:42","15:54","16:06","16:18","16:30","16:42","16:54","17:06","17:18","17:30","17:42","17:54","18:06","18:18","18:30","18:42","18:54","19:06","19:18","19:29","19:40","19:51","20:02","20:13","20:24","20:35","20:46","20:57","21:08","21:19","21:30","21:42","21:54","22:06","22:20"],C:["07:25","08:00","08:20","08:40","09:00","09:20","09:40","10:00","10:20","10:40","11:00","11:20","11:40","12:00","12:40","13:00","13:20","13:40","14:00","14:20","14:40","15:00","15:20","15:40","16:00","16:20","16:40","17:00","17:20","17:40","18:00","18:20","18:40","19:00","19:20","19:40","20:00","20:20","20:40","21:00","21:20","21:40","22:00","22:20","22:40","23:00"],P:["07:30","08:30","09:30","10:30","11:30","12:00","12:40","13:07","14:01","14:28","14:55","15:22","15:49","16:16","16:43","17:10","17:37","18:04","18:35","19:00","19:20","20:00","20:30","21:00","21:30","22:00","22:30"]}
+};
+var dir="y";
+function gg(){var d=new Date().getDay();return d===6?"C":d===0?"P":"I";}
+function ga(g){return g==="C"?"Cumartesi":g==="P"?"Pazar":"Hafta İçi";}
+function nm(){var n=new Date();return n.getHours()*60+n.getMinutes();}
+function tm(s){var p=s.split(":");return parseInt(p[0])*60+parseInt(p[1]);}
+function dt(s){var d=tm(s)-nm();if(d===0)return"şu an";if(d>0)return d<10?d+"dk!":d+"dk";return Math.abs(d)+"dk önce";}
+function mkslots(arr,nc){
+  var now=nm(),past=[],fut=[];
+  for(var i=0;i<arr.length;i++){if(tm(arr[i])<=now)past.push(arr[i]);else fut.push(arr[i]);}
+  var son=past.length?past[past.length-1]:null;
+  var bir=fut.length?fut[0]:null;
+  var iki=fut.length>1?fut[1]:null;
+  function sl(lbl,s,cls){
+    if(!s)return'<div class="slot"><div class="sl">'+lbl+'</div><div class="st none">--</div><div class="ss"></div></div>';
+    var hot=tm(s)-now<=5&&tm(s)-now>=0;
+    return'<div class="slot"><div class="sl">'+lbl+'</div><div class="st '+cls+'">'+s+'</div><div class="ss'+(hot?' hot':'')+'">'+dt(s)+'</div></div>';
+  }
+  return sl("Son kalkan",son,"past")+sl("Bir sonraki",bir,nc)+sl("İki sonraki",iki,"soon");
+}
+function sd(d){
+  dir=d;
+  document.getElementById("ty").className="tab"+(d==="y"?" on":"");
+  document.getElementById("tk").className="tab"+(d==="k"?" on":"");
+  document.getElementById("rn19").textContent=d==="y"?"Yurt → Kadıköy":"Kadıköy → Yurt";
+  render();
+}
+function render(){
+  var g=gg(),n=new Date();
+  document.getElementById("clk").textContent=n.toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("gkm").textContent=ga(g);
+  document.getElementById("gf19").textContent=ga(g);
+  document.getElementById("skm").innerHTML=mkslots(D.KM[g]||D.KM.I,"nkm");
+  document.getElementById("sf19").innerHTML=mkslots((dir==="y"?D.FY:D.FK)[g]||(dir==="y"?D.FY:D.FK).I,"nf");
+}
+sd("y");render();
+setInterval(render,30000);
+</script>
+</body>
+</html>
