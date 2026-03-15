@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0d0d14;
+    --card: #13131e;
+    --line: rgba(255,255,255,0.07);
+    --muted: #55556a;
+    --muted2: #8888a0;
+    --text: #e8e8f0;
+    --blue: #4f9cf9;
+    --blue-bg: rgba(79,156,249,0.13);
+    --green: #34d399;
+    --green-bg: rgba(52,211,153,0.13);
+    --warn: #fb923c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .widget {
+    width: 100vw;
+    height: 100vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2px;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+  .app-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .clock {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted2);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid var(--line);
+  }
+  .card-km  { border-top: 2px solid var(--blue); }
+  .card-f19 { border-top: 2px solid var(--green); }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 11px 6px;
+    border-bottom: 0.5px solid var(--line);
+  }
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 5px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .badge-km  { background: var(--blue-bg);  color: var(--blue); }
+  .badge-f19 { background: var(--green-bg); color: var(--green); }
+  .route-name {
+    font-size: 10px;
+    color: var(--muted2);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gun-tag {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  /* ── DIR TABS (19F) ── */
+  .dir-tabs {
+    display: flex;
+    border-bottom: 0.5px solid var(--line);
+  }
+  .dir-tab {
+    flex: 1;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .dir-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 15%; right: 15%;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--green);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+  .dir-tab.active { color: var(--green); }
+  .dir-tab.active::after { transform: scaleX(1); }
+
+  /* ── SLOTS ── */
+  .slots {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex: 1;
+  }
+  .slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 4px;
+    position: relative;
+  }
+  .slot:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 15%; height: 70%;
+    width: 0.5px;
+    background: var(--line);
+  }
+  .slot-label {
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .slot-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .slot-time.past  { color: var(--muted); }
+  .slot-time.next-km { color: var(--blue); }
+  .slot-time.next-f  { color: var(--green); }
+  .slot-time.soon  { color: var(--text); }
+  .slot-time.none  { color: var(--line); }
+  .slot-sub {
+    font-size: 8px;
+    color: var(--muted);
+    font-weight: 500;
+    min-height: 10px;
+    text-align: center;
+  }
+  .slot-sub.hot { color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="widget">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="live-dot"></div>
+      <span class="app-name">İETT Sefer</span>
+    </div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+
+  <!-- KM41 Card -->
+  <div class="card card-km">
+    <div class="card-head">
+      <span class="badge badge-km">KM41-1</span>
+      <span class="route-name">Başıbüyük → Küçükyalı</span>
+      <span class="gun-tag" id="gun-km">—</span>
+    </div>
+    <div class="slots" id="slots-km"></div>
+  </div>
+
+  <!-- 19F Card -->
+  <div class="card card-f19">
+    <div class="card-head">
+      <span class="badge badge-f19">19F-1</span>
+      <span class="route-name" id="f19-route">Yurt → Kadıköy</span>
+      <span class="gun-tag" id="gun-f19">—</span>
+    </div>
+    <div class="dir-tabs">
+      <button class="dir-tab active" id="tab-yurt" onclick="setDir('yurt')">⬆ Yurt→Kadıköy</button>
+      <button class="dir-tab" id="tab-kady" onclick="setDir('kady')">⬇ Kadıköy→Yurt</button>
+    </div>
+    <div class="slots" id="slots-f19"></div>
+  </div>
+
+</div>
+
+<script>
+const DATA = {
+  KM41: {
+    I:["06:44","07:09","07:34","07:58","08:25","08:52","09:15","09:41","10:04","10:31","10:55","11:21","11:46","12:10","12:35","13:01","13:24","13:52","14:14","14:41","15:05","15:32","15:55","16:23","16:46","17:11","17:34","17:59","18:24","18:49","19:14","19:40"],
+    C:["06:44","07:09","07:34","07:58","08:25","08:52","09:15","09:41","10:04","10:31","10:55","11:21","11:46","12:10","12:35","13:01","13:24","13:52","14:14","14:41","15:05","15:32","15:55","16:23","16:46","17:11","17:34","17:59","18:24","18:49","19:14","19:40"],
+    P:["06:44","07:09","07:34","07:58","08:25","08:52","09:15","09:41","10:04","10:31","10:55","11:21","11:46","12:10","12:35","13:01","13:24","13:52","14:14","14:41","15:05","15:32","15:55","16:23","16:46","17:11","17:34","17:59","18:24","18:49","19:14","19:40"]
+  },
+  F19_yurt:{
+    I:["06:30","06:40","06:48","06:55","07:00","07:05","07:10","07:15","07:20","07:25","07:30","07:35","07:40","07:45","07:50","07:55","08:00","08:05","08:10","08:15","08:20","08:26","08:32","08:40","08:48","08:57","09:06","09:15","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30"],
+    C:["07:00","07:30","07:50","08:10","08:30","08:50","09:10","09:30","09:50","10:10","10:30","10:50","11:10","11:30","11:49","12:07","12:24","12:41","13:00","13:20","13:40","14:00","14:20","14:40","15:00","15:20","15:40","16:00","16:20","16:40","17:00","17:20","17:40","18:00","18:20","18:41","19:02","19:23","19:45","20:10","20:30","20:50","21:10","21:30","21:50","22:10","22:30"],
+    P:["07:00","08:00","09:00","10:00","11:00","11:30","12:00","12:35","13:21","13:48","14:15","14:42","15:09","15:36","16:03","16:30","16:57","17:24","17:51","18:20","18:45","19:05","19:30","20:00","20:30","21:00","21:30","22:00"]
+  },
+  F19_kady:{
+    I:["14:30","14:45","15:00","15:15","15:30","15:42","15:54","16:06","16:18","16:30","16:42","16:54","17:06","17:18","17:30","17:42","17:54","18:06","18:18","18:30","18:42","18:54","19:06","19:18","19:29","19:40","19:51","20:02","20:13","20:24","20:35","20:46","20:57","21:08","21:19","21:30","21:42","21:54","22:06","22:20"],
+    C:["07:25","08:00","08:20","08:40","09:00","09:20","09:40","10:00","10:20","10:40","11:00","11:20","11:40","12:00","12:40","13:00","13:20","13:40","14:00","14:20","14:40","15:00","15:20","15:40","16:00","16:20","16:40","17:00","17:20","17:40","18:00","18:20","18:40","19:00","19:20","19:40","20:00","20:20","20:40","21:00","21:20","21:40","22:00","22:20","22:40","23:00"],
+    P:["07:30","08:30","09:30","10:30","11:30","12:00","12:40","13:07","14:01","14:28","14:55","15:22","15:49","16:16","16:43","17:10","17:37","18:04","18:35","19:00","19:20","20:00","20:30","21:00","21:30","22:00","22:30"]
+  }
+};
+
+let dir = "yurt";
+
+function getGun(){const d=new Date().getDay();return d===6?"C":d===0?"P":"I";}
+function gunAdi(g){return g==="C"?"Cumartesi":g==="P"?"Pazar":"Hafta İçi";}
+function nowMin(){const n=new Date();return n.getHours()*60+n.getMinutes();}
+function toMin(s){const[h,m]=s.split(":").map(Number);return h*60+m;}
+function diffText(s){
+  const d=toMin(s)-nowMin();
+  if(d===0)return"şu an";
+  if(d>0)return d<10?d+"dk ⚡":d+"dk";
+  return Math.abs(d)+"dk önce";
+}
+
+function makeSlots(saatler, nextCls){
+  const now=nowMin();
+  const past=saatler.filter(s=>toMin(s)<=now);
+  const future=saatler.filter(s=>toMin(s)>now);
+  const son=past.length?past[past.length-1]:null;
+  const bir=future.length?future[0]:null;
+  const iki=future.length>1?future[1]:null;
+
+  function slot(label,saat,cls){
+    if(!saat)return`<div class="slot"><div class="slot-label">${label}</div><div class="slot-time none">──</div><div class="slot-sub"></div></div>`;
+    const diff=diffText(saat);
+    const hot=toMin(saat)-now<=5&&toMin(saat)-now>=0;
+    return`<div class="slot"><div class="slot-label">${label}</div><div class="slot-time ${cls}">${saat}</div><div class="slot-sub${hot?" hot":""}">${diff}</div></div>`;
+  }
+  return slot("Son kalkan",son,"past")+slot("Bir sonraki",bir,nextCls)+slot("İki sonraki",iki,"soon");
+}
+
+function setDir(d){
+  dir=d;
+  document.getElementById("tab-yurt").className="dir-tab"+(d==="yurt"?" active":"");
+  document.getElementById("tab-kady").className="dir-tab"+(d==="kady"?" active":"");
+  document.getElementById("f19-route").textContent=d==="yurt"?"Yurt → Kadıköy":"Kadıköy → Yurt";
+  renderAll();
+}
+
+function renderAll(){
+  const g=getGun();
+  const n=new Date();
+  document.getElementById("clock").textContent=n.toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("gun-km").textContent=gunAdi(g);
+  document.getElementById("gun-f19").textContent=gunAdi(g);
+  document.getElementById("slots-km").innerHTML=makeSlots(DATA.KM41[g]||[],"next-km");
+  document.getElementById("slots-f19").innerHTML=makeSlots(DATA["F19_"+dir][g]||[],"next-f");
+}
+
+renderAll();
+setInterval(renderAll,30000);
+</script>
+</body>
+</html>
